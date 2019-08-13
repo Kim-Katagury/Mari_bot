@@ -1,0 +1,13 @@
+{
+  "name": "Xyon BOT",
+  "description": "Bot básico para Discord comentado.",
+  "version": "1.0.0",
+  "main": "principal.js",
+  "author": "Kim",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "fs": "^0.0.1-security"
+  },
+  "repository": "https://github.com/Kim-Katagury/Xyon-Bot"
+}
