@@ -16,7 +16,7 @@ client.cmds = new Collection();
 client.aliases = new Collection();
 
 client.on("ready", () => {
-   console.log("Funcionando.")
+   console.log(`Estou online em ${client.guilds.size} servidores.`)
 })
 
 const carregarComandos = module.exports.carregarComandos = (dir = "./comandos/") => {
@@ -27,11 +27,10 @@ const carregarComandos = module.exports.carregarComandos = (dir = "./comandos/")
                 if (lstatSync(`./${dir}/${arquivo}`).isDirectory()) {
                     carregarComandos(`./${dir}/${arquivo}`)
                 } else if (arquivo.endsWith(".js")) {
-                    console.log(`Lendo o arquivo: ${arquivo.split(".")[0]}`)
                     const salvar = (nome, aliases = [], props) => {
                         client.cmds.set(nome, props)
                         if(aliases.length > 0) aliases.forEach((alias) => client.aliases.set(alias, props))
-                        console.log(`Comando carregado: ${nome} | ${aliases.length} aliases`)
+                        console.log(`O comando ${nome} foi carregado.`)
                     }
                     const props = require(`./${dir}/${arquivo}`)
                     if(!props.run)  {
@@ -67,30 +66,48 @@ const carregarComandos = module.exports.carregarComandos = (dir = "./comandos/")
         })
     })
 }
-carregarComandos();
+carregarComandos(); 
 
-/*
-Todo arquivo de comando deve seguir o seguinte padrão:
-
-module.exports.run = (client, message, args) => {
-~ código do comando aqui ~
-}
-
-module.exports.info = {
-    name: "nome do comando",
-    aliases: ["outro meio de chamar o comando"] -- essa parte é opcional
-}
-*/
-
+// Eventos que podem ser passados pra pasta futuramente
 client.on("message", async message => {
+
     if (message.author.bot) return;
     if (message.content.indexOf(prefix) !== 0) return;
-    if (message.channel.type != 'text') return; // Ignora todos os comandos que não forem em canais de texto
+    if (message.channel.type != 'text') return;
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const cmd = args.shift().toLowerCase();
 
     const cmdParaExecutar = client.cmds.get(cmd) || client.aliases.get(cmd)
     if (cmdParaExecutar != null) cmdParaExecutar.run(client, message, args)
+})
+
+// Eventos que podem ser passados pra pasta futuramente
+client.on('guildMemberAdd', member => {
+
+    const entrar = new Discord.RichEmbed()
+        .setColor("#00076A3")
+        .setAuthor("Me conhece?, que tal conhecer?", `${member.avatarURL}`)
+        .setTitle("De vez em quando eu posso ficar offline, pra ir comprar um dogão ou ir no McDonalds..")
+        .setDescription("Se você tiver algum dinheiro sobrando, sabe? Aquele que fica na gaveta ou que você ia comprar cartinhas, me doe! Presciso pagar as contas :(")
+        .setFooter("Desenvolvido por Kim (C)")
+        member.send(entrar)
+})
+
+// Eventos que podem ser passados pra pasta futuramente
+client.on('guildMemberAdd', member => {
+
+   const anuncio = new Discord.RichEmbed()
+   .setColor("#0076A3")
+   .setAuthor(`Bem vindo ${member}`, `${member.avatarURL}`)
+   .setTitle("Antes de tudo, deixa eu me apresentar :)")
+   .setDescription(`Meu nome é Xyon e sou um super-bot pra Discord.`)
+   .addField("Tenho comandos de moderação!", "E são muitos...", true)
+   .setThumbnail(`${member.avatarURL}`)
+   .addField("Eu sei cantar!", "Ou pelo menos tento?!", true)
+   .addField("Posso divertir seu servidor", "Ao menos se forem nerds", true)
+   .addField("Comece utlizando:", `x!help`, true)
+   .setFooter("Fui desenvolvido por Kim, e sou open-source")
+   member.send(anuncio)
 })
 
 client.login(token)
